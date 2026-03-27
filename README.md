@@ -26,6 +26,18 @@ Your final app should:
 
 The scheduler now does more than just list tasks. It can track task status, sort tasks by priority or scheduled time, detect overlapping tasks, and flag conflicts for the same pet or across different pets. The system also keeps task selection within the owner's available time and can explain why a daily plan was chosen.
 
+## Testing PawPal+
+
+Run the automated tests with:
+
+```bash
+python -m pytest
+```
+
+The current test suite covers the most important scheduling and task-management behaviors, including due-task filtering, chronological sorting, priority-based daily planning within the owner's time limit, task status updates, recurring daily task creation after completion, owner/pet task synchronization, and conflict detection for overlapping or duplicate scheduled times.
+
+Confidence Level: 4/5 stars. The core scheduling logic is well covered by passing unit tests, but overall reliability would be stronger with broader edge-case, integration, and UI-level test coverage.
+
 ## Getting started
 
 ### Setup
