@@ -22,9 +22,18 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
-## Smarter Scheduling
+## Features
 
-The scheduler now does more than just list tasks. It can track task status, sort tasks by priority or scheduled time, detect overlapping tasks, and flag conflicts for the same pet or across different pets. The system also keeps task selection within the owner's available time and can explain why a daily plan was chosen.
+- Due-task filtering: tasks are included in planning only when they are due based on daily, weekly, or monthly recurrence rules.
+- Sorting by priority: the scheduler ranks tasks by priority first and then by shorter duration when building a plan.
+- Sorting by time: task lists can be displayed in chronological order using scheduled hour and minute.
+- Time-limit selection: daily plans include only the tasks that fit within the owner's available minutes.
+- Conflict warnings: overlapping tasks are detected and flagged in the UI.
+- Conflict classification: overlaps are labeled as either same-pet conflicts or different-pet conflicts.
+- Daily recurrence: completing a recurring task creates a follow-up pending task for the next cycle.
+- Task status tracking: tasks can move between pending, completed, and skipped states.
+- Plan explanation: the app generates a readable summary of why the daily plan was selected.
+- Owner and pet task synchronization: when a task is added to an owner, it is also linked to the correct pet.
 
 ## Testing PawPal+
 

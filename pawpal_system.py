@@ -139,6 +139,13 @@ class Owner:
         if task not in task.pet.tasks:
             task.pet.tasks.append(task)
 
+    def remove_task(self, task: Task) -> None:
+        """Remove a task from the owner and from the associated pet."""
+        if task in self.tasks:
+            self.tasks.remove(task)
+        if task in task.pet.tasks:
+            task.pet.tasks.remove(task)
+
     def get_due_tasks(self, today: date = date.today()) -> List[Task]:
         """Return all owner tasks that are due on the given date."""
         return [task for task in self.tasks if task.is_due_today(today)]
@@ -161,6 +168,19 @@ class Owner:
                 new_task = task.mark_completed(completion_date)
                 if new_task is not None:
                     self.add_task(new_task)
+
+    def mark_task_completed(self, task: Task, completion_date: date = date.today()) -> None:
+        """Mark one task complete and add its next occurrence if it recurs."""
+        if task not in self.tasks:
+            return
+        new_task = task.mark_completed(completion_date)
+        if new_task is not None:
+            self.add_task(new_task)
+
+    def skip_task(self, task: Task) -> None:
+        """Mark one task as skipped if it belongs to this owner."""
+        if task in self.tasks:
+            task.skip_task()
 
 
 class Scheduler:

@@ -222,6 +222,61 @@ def test_owner_add_task_keeps_owner_and_pet_task_lists_in_sync() -> None:
     assert owner.tasks[0] is mochi.tasks[0]
 
 
+def test_owner_remove_task_updates_owner_and_pet_task_lists() -> None:
+    owner, mochi, _ = make_owner_with_pets()
+    task = Task(
+        name="Morning walk",
+        duration=30,
+        priority=Priority.HIGH,
+        frequency=Frequency.DAILY,
+        task_type="exercise",
+        pet=mochi,
+    )
+    owner.add_task(task)
+
+    owner.remove_task(task)
+
+    assert task not in owner.tasks
+    assert task not in mochi.tasks
+
+
+def test_owner_mark_task_completed_updates_status_and_adds_follow_up() -> None:
+    owner, mochi, _ = make_owner_with_pets()
+    task = Task(
+        name="Morning walk",
+        duration=30,
+        priority=Priority.HIGH,
+        frequency=Frequency.DAILY,
+        task_type="exercise",
+        pet=mochi,
+    )
+    owner.add_task(task)
+
+    owner.mark_task_completed(task, date(2026, 3, 27))
+
+    assert task.status == TaskStatus.COMPLETED
+    assert len(owner.tasks) == 2
+    assert owner.tasks[1].status == TaskStatus.PENDING
+    assert owner.tasks[1].pet is mochi
+
+
+def test_owner_skip_task_updates_status() -> None:
+    owner, mochi, _ = make_owner_with_pets()
+    task = Task(
+        name="Brush coat",
+        duration=15,
+        priority=Priority.MEDIUM,
+        frequency=Frequency.WEEKLY,
+        task_type="grooming",
+        pet=mochi,
+    )
+    owner.add_task(task)
+
+    owner.skip_task(task)
+
+    assert task.status == TaskStatus.SKIPPED
+
+
 def test_detect_conflicts_finds_overlaps_and_classifies_pet_relationships() -> None:
     owner, mochi, luna = make_owner_with_pets()
 
