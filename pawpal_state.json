@@ -1,13 +1,108 @@
 {
-  "name": "Jordan",
-  "time_available": 60,
+  "name": "Alina",
+  "time_available": 120,
   "preferences": [],
   "pets": [
     {
       "name": "Mochi",
       "type": "dog",
       "age": 4
+    },
+    {
+      "name": "Chiffon",
+      "type": "cat",
+      "age": 2
+    },
+    {
+      "name": "Papaya",
+      "type": "other",
+      "age": 15
     }
   ],
-  "tasks": []
+  "tasks": [
+    {
+      "name": "Morning walk",
+      "duration": 20,
+      "priority": "high",
+      "frequency": "daily",
+      "task_type": "exercise",
+      "pet_name": "Mochi",
+      "last_completed": null,
+      "scheduled_hour": 9,
+      "scheduled_minute": 0,
+      "status": "pending"
+    },
+    {
+      "name": "Groom Mochi at Petco",
+      "duration": 180,
+      "priority": "medium",
+      "frequency": "monthly",
+      "task_type": "grooming",
+      "pet_name": "Mochi",
+      "last_completed": null,
+      "scheduled_hour": 13,
+      "scheduled_minute": 15,
+      "status": "pending"
+    },
+    {
+      "name": "Bath for Mochi",
+      "duration": 20,
+      "priority": "medium",
+      "frequency": "monthly",
+      "task_type": "bath",
+      "pet_name": "Mochi",
+      "last_completed": null,
+      "scheduled_hour": 12,
+      "scheduled_minute": 10,
+      "status": "pending"
+    },
+    {
+      "name": "Bath for Chiffon",
+      "duration": 20,
+      "priority": "medium",
+      "frequency": "monthly",
+      "task_type": "bath",
+      "pet_name": "Chiffon",
+      "last_completed": null,
+      "scheduled_hour": 12,
+      "scheduled_minute": 10,
+      "status": "pending"
+    },
+    {
+      "name": "Trim Claws Chiffon",
+      "duration": 12,
+      "priority": "high",
+      "frequency": "monthly",
+      "task_type": "bath",
+      "pet_name": "Chiffon",
+      "last_completed": null,
+      "scheduled_hour": 17,
+      "scheduled_minute": 30,
+      "status": "pending"
+    },
+    {
+      "name": "Trim Claws Mochi",
+      "duration": 12,
+      "priority": "high",
+      "frequency": "monthly",
+      "task_type": "bath",
+      "pet_name": "Mochi",
+      "last_completed": null,
+      "scheduled_hour": 17,
+      "scheduled_minute": 18,
+      "status": "pending"
+    },
+    {
+      "name": "Take Papaya to Vet",
+      "duration": 120,
+      "priority": "high",
+      "frequency": "weekly",
+      "task_type": "vet",
+      "pet_name": "Papaya",
+      "last_completed": null,
+      "scheduled_hour": 15,
+      "scheduled_minute": 0,
+      "status": "pending"
+    }
+  ]
 }
