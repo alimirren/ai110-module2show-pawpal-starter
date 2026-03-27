@@ -45,11 +45,11 @@
 
 **a. What you tested**
 
-- I tested
+- In the test file, I tested if the task status was correct, if Scheduler follows task priority and sorts it by time.
 
 **b. Confidence**
 
-- In the test file, I tested if the task status was correct, if Scheduler follows task priority and sorts it by time. 
+- I am confident that my program runs without mistakes because it passed all the tests. 
 
 ---
 
