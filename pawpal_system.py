@@ -1,3 +1,20 @@
+from datetime import date, datetime
+from typing import List, Optional, Dict
+from enum import Enum
+
+
+class Priority(Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+class Frequency(Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+
+
 class Pet:
     def __init__(self, name: str, type: str, age: int):
         self.name = name
@@ -6,72 +23,55 @@ class Pet:
 
 
 class Task:
-    def __init__(self, name: str, duration: int, priority: str, frequency: str, task_type: str, pet: Pet):
+    def __init__(self, name: str, duration: int, priority: Priority, frequency: Frequency, task_type: str, pet: 'Pet', last_completed: Optional[date] = None):
         self.name = name
         self.duration = duration
         self.priority = priority
         self.frequency = frequency
         self.task_type = task_type
         self.pet = pet
+        self.last_completed = last_completed
 
-    def is_due_today(self) -> bool:
-        # TODO: Implement logic to check if task is due today
+    def is_due_today(self, today: date = date.today()) -> bool:
+        pass
+
+    def mark_completed(self, completion_date: date = date.today()) -> None:
         pass
 
 
-class User:
-    def __init__(self, name: str, time_available: int, preferences: list[str]):
+class Owner:
+    def __init__(self, name: str, time_available: int, preferences: List[str]):
         self.name = name
         self.time_available = time_available
         self.preferences = preferences
+        self.pets: List[Pet] = []
+        self.tasks: List[Task] = []
 
-    def request_plan(self, planner: 'Planner') -> 'DailyPlan':
-        # TODO: Implement logic to request a plan from planner
+    def add_pet(self, pet: Pet) -> None:
         pass
-
-
-class ConstraintManager:
-    def __init__(self, max_time: int, preferences: list[str]):
-        self.max_time = max_time
-        self.preferences = preferences
-
-    def filter_tasks(self, tasks: list[Task]) -> list[Task]:
-        # TODO: Implement logic to filter tasks based on constraints
-        pass
-
-    def sort_tasks(self, tasks: list[Task]) -> list[Task]:
-        # TODO: Implement logic to sort tasks based on constraints
-        pass
-
-
-class DailyPlan:
-    def __init__(self, date: str):
-        self.date = date
-        self.tasks = []
-        self.total_time = 0
 
     def add_task(self, task: Task) -> None:
-        # TODO: Implement logic to add task to plan
         pass
 
-    def calculate_total_time(self) -> int:
-        # TODO: Implement logic to calculate total time of all tasks
-        pass
-
-    def print_plan(self) -> None:
-        # TODO: Implement logic to print the daily plan
+    def get_due_tasks(self, today: date = date.today()) -> List[Task]:
         pass
 
 
-class Planner:
-    def __init__(self, tasks: list[Task], constraint_manager: ConstraintManager):
-        self.tasks = tasks
-        self.constraint_manager = constraint_manager
+class Scheduler:
+    def __init__(self, owner: Owner):
+        self.owner = owner
 
-    def generate_plan(self, user: User) -> DailyPlan:
-        # TODO: Implement logic to generate a daily plan for the user
+    def create_daily_plan(self, plan_date: date = date.today()) -> Dict:
         pass
 
-    def explain_plan(self, plan: DailyPlan) -> str:
-        # TODO: Implement logic to explain the generated plan
+    def explain_plan(self, plan: Dict) -> str:
+        pass
+
+    def _filter_tasks_by_preferences(self, tasks: List[Task]) -> List[Task]:
+        pass
+
+    def _sort_tasks(self, tasks: List[Task]) -> List[Task]:
+        pass
+
+    def _select_tasks_within_time_limit(self, tasks: List[Task]) -> List[Task]:
         pass

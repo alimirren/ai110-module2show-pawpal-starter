@@ -4,8 +4,12 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+- While making UML, I will come up with classes and tools the user would be able to use with PawPal+.
+- User: has a name, time, preference variables.
+- Pet: has a name, type, age, maybe certain conditions?
+- Planner: Will generate a plan for the user
+- Task: A subclass? of Planner that will store the task entered by the user. Has name, duration, priority, frequency, due date variables.
+- Constraint: not sure how it would work yet, but it would have a time variable.
 
 **b. Design changes**
 
