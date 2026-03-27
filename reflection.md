@@ -13,8 +13,7 @@
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+- The design of PawPal changed a lot after working with the Agent. When I compared the current design with pawpal_uml.md, I noticed that the current design is much richer and has a lot of classes and their methods. Class Task, for example, now tracks Task's status and scheduled time. 
 
 ---
 
@@ -22,13 +21,11 @@
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+- There are several constraints I added to the program. `due today`, `priority`, `time available`, `preferences`. I also listed them down in order which matters the most. `due today` matters the most because it's a task that must be completed today, regardless of priority and preferences.
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+- One tradeoff my scheduler makes is that it puts simplicity over realism. For example, some tasks may overlap with each other without being resolved. This tradeoff makes the code cleaner by using easier logic.
 
 ---
 
@@ -36,13 +33,11 @@
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+- I used AI for the vast majority of this project because my Python skills are not the best. I liked asking it logical questions and seeing how it would respond. Codex and Copilot helped me with fast coding and finding logical errors. In return, I tested the UI and found some other features I would've wanted to implement.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+- When creating a UML, I originally asked GPT to write something simple. However, it did not understand the assignment, and gave me a UML that I could barely even read. Too many classes and functions. Also, when generating a skeleton, the AI basically gave me a ready code of the entire PawPal instead of structure. I had to reject it.
 
 ---
 
@@ -50,13 +45,11 @@
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+- I tested
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+- In the test file, I tested if the task status was correct, if Scheduler follows task priority and sorts it by time. 
 
 ---
 
@@ -64,12 +57,12 @@
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+- I feel like I am satisfied with the Scheduler the most. It feels neat to me.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+- I feel like entering each task and assigning the time would be annoying for the user. It might be simplified somehow.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+- One takeaway I have is that AI needs CONTEXT. It's like a hungry child that needs to be fed. UML is a good source of food when writing a code. Based on a UML, AI would be able to implement your ideas very easily.
