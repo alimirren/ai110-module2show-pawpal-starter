@@ -122,10 +122,16 @@ def print_schedule() -> None:
     if conflicts:
         print(f"⚠️  Found {len(conflicts)} conflict(s):")
         for task1, task2 in conflicts:
+            conflict_type = scheduler.get_conflict_type(task1, task2)
+            conflict_label = (
+                "same pet conflict"
+                if conflict_type == "same_pet"
+                else "different pets conflict"
+            )
             print(
-                f"  - {task1.name} ({task1.scheduled_hour:02d}:{task1.scheduled_minute:02d}-"
+                f"  - {conflict_label}: {task1.name} ({task1.scheduled_hour:02d}:{task1.scheduled_minute:02d}-"
                 f"{task1.end_time_minutes//60:02d}:{task1.end_time_minutes%60:02d}) "
-                f"overlaps with {task2.name}"
+                f"overlaps with {task2.name} for {task2.pet.name}"
             )
     else:
         print("✓ No scheduling conflicts detected!")

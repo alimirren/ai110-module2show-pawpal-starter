@@ -278,6 +278,46 @@ def test_detect_time_conflicts() -> None:
 
     assert len(conflicts) == 1
     assert (task1, task2) in conflicts or (task2, task1) in conflicts
+    assert scheduler.get_conflict_type(task1, task2) == "same_pet"
+
+
+def test_detect_time_conflicts_for_different_pets() -> None:
+    owner = Owner(name="Jordan", time_available=90, preferences=[])
+    mochi = Pet(name="Mochi", type="Dog", age=4)
+    luna = Pet(name="Luna", type="Cat", age=2)
+    owner.add_pet(mochi)
+    owner.add_pet(luna)
+
+    task1 = Task(
+        name="Morning walk",
+        duration=30,
+        priority=Priority.HIGH,
+        frequency=Frequency.DAILY,
+        task_type="exercise",
+        pet=mochi,
+        scheduled_hour=7,
+        scheduled_minute=0,
+    )
+    task2 = Task(
+        name="Feed breakfast",
+        duration=15,
+        priority=Priority.HIGH,
+        frequency=Frequency.DAILY,
+        task_type="feeding",
+        pet=luna,
+        scheduled_hour=7,
+        scheduled_minute=10,
+    )
+
+    owner.add_task(task1)
+    owner.add_task(task2)
+
+    scheduler = Scheduler(owner)
+    conflicts = scheduler.detect_conflicts(owner.tasks)
+
+    assert len(conflicts) == 1
+    assert (task1, task2) in conflicts or (task2, task1) in conflicts
+    assert scheduler.get_conflict_type(task1, task2) == "different_pets"
 
 
 def test_no_conflicts_non_overlapping_tasks() -> None:

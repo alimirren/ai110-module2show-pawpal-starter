@@ -216,10 +216,16 @@ with col2:
             if conflicts:
                 st.warning(f"⚠️  **{len(conflicts)} scheduling conflict(s) detected!**")
                 for task1, task2 in conflicts:
+                    conflict_type = scheduler.get_conflict_type(task1, task2)
+                    conflict_label = (
+                        "Same pet conflict"
+                        if conflict_type == "same_pet"
+                        else "Different pets conflict"
+                    )
                     st.error(
-                        f"'{task1.name}' ({task1.scheduled_hour:02d}:{task1.scheduled_minute:02d}-"
+                        f"{conflict_label}: '{task1.name}' ({task1.scheduled_hour:02d}:{task1.scheduled_minute:02d}-"
                         f"{task1.end_time_minutes//60:02d}:{task1.end_time_minutes%60:02d}) "
-                        f"overlaps with '{task2.name}'"
+                        f"overlaps with '{task2.name}' for {task2.pet.name}"
                     )
             else:
                 st.success("✓ No scheduling conflicts detected!")

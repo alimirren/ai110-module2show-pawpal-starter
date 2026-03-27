@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 from typing import List, Optional, Dict
 from enum import Enum
 
@@ -44,7 +44,7 @@ class Task:
     """Represents a care activity associated with a specific pet."""
 
     def __init__(self, name: str, duration: int, priority: Priority, frequency: Frequency, task_type: str, pet: 'Pet', last_completed: Optional[date] = None, scheduled_hour: int = 9, scheduled_minute: int = 0, status: 'TaskStatus' = None):
-        """Create a task with scheduling details, time, and status tracking."""
+        """Create a task with scheduling details, clock time, and status tracking."""
         self.name = name
         self.duration = duration
         self.priority = priority
@@ -58,13 +58,16 @@ class Task:
 
     @property
     def end_time_minutes(self) -> int:
-        """Return the end time of this task in minutes since midnight."""
+        """Return the task's end time in minutes since midnight.
+
+        This makes it easier to compare task time ranges when checking for overlaps.
+        """
         start_minutes = self.scheduled_hour * 60 + self.scheduled_minute
         return start_minutes + self.duration
 
     @property
     def start_time_minutes(self) -> int:
-        """Return the start time of this task in minutes since midnight."""
+        """Return the task's start time in minutes since midnight."""
         return self.scheduled_hour * 60 + self.scheduled_minute
 
     def is_due_today(self, today: date = date.today()) -> bool:
@@ -91,25 +94,24 @@ class Task:
         self.last_completed = completion_date
         self.status = TaskStatus.COMPLETED
 
-        if auto_reschedule and self.frequency in (Frequency.DAILY, Frequency.WEEKLY, Frequency.MONTHLY):
-            new_task = Task(
-                name=self.name,
-                duration=self.duration,
-                priority=self.priority,
-                frequency=self.frequency,
-                task_type=self.task_type,
-                pet=self.pet,
-                last_completed=completion_date,
-                scheduled_hour=self.scheduled_hour,
-                scheduled_minute=self.scheduled_minute,
-                status=TaskStatus.PENDING,
-            )
-            return new_task
+        if not auto_reschedule:
+            return None
 
-        return None
+        return Task(
+            name=self.name,
+            duration=self.duration,
+            priority=self.priority,
+            frequency=self.frequency,
+            task_type=self.task_type,
+            pet=self.pet,
+            last_completed=completion_date,
+            scheduled_hour=self.scheduled_hour,
+            scheduled_minute=self.scheduled_minute,
+            status=TaskStatus.PENDING,
+        )
 
     def skip_task(self) -> None:
-        """Mark the task as skipped for today."""
+        """Mark the task as skipped for the current day without deleting it."""
         self.status = TaskStatus.SKIPPED
 
 
@@ -142,15 +144,18 @@ class Owner:
         return [task for task in self.tasks if task.is_due_today(today)]
 
     def filter_tasks_by_pet(self, pet: Pet) -> List[Task]:
-        """Return all tasks assigned to a specific pet."""
+        """Return all owner-managed tasks assigned to the given pet."""
         return [task for task in self.tasks if task.pet == pet]
 
     def filter_tasks_by_status(self, status: TaskStatus) -> List[Task]:
-        """Return all tasks with a specific status."""
+        """Return all owner-managed tasks that match the requested status."""
         return [task for task in self.tasks if task.status == status]
 
     def mark_tasks_completed(self, tasks: List[Task], completion_date: date = date.today()) -> None:
-        """Mark multiple tasks as completed at once, and reschedule recurring tasks."""
+        """Mark several tasks complete and add any rescheduled follow-up tasks.
+
+        Each task is completed only if it already belongs to this owner's task list.
+        """
         for task in tasks:
             if task in self.tasks:
                 new_task = task.mark_completed(completion_date)
@@ -173,11 +178,16 @@ class Scheduler:
         self.owner = owner
 
     def create_daily_plan(self, plan_date: date = date.today()) -> Dict:
-        """Create a daily plan by filtering, sorting, and fitting due tasks."""
-        due_tasks = self.owner.get_due_tasks(plan_date)
-        filtered_tasks = self._filter_tasks_by_preferences(due_tasks)
-        sorted_tasks = self._sort_tasks(filtered_tasks)
-        selected_tasks = self._select_tasks_within_time_limit(sorted_tasks)
+        """Create a daily plan for one date using due tasks and owner constraints.
+
+        The plan includes only tasks that are due, match preferences when possible,
+        and fit within the owner's available time.
+        """
+        selected_tasks = self._select_tasks_within_time_limit(
+            self._sort_tasks(
+                self._filter_tasks_by_preferences(self.owner.get_due_tasks(plan_date))
+            )
+        )
         total_duration = sum(task.duration for task in selected_tasks)
 
         return {
@@ -189,7 +199,7 @@ class Scheduler:
         }
 
     def explain_plan(self, plan: Dict) -> str:
-        """Return a human-readable explanation of the generated plan."""
+        """Return a short human-readable summary of the generated plan."""
         tasks = plan.get("tasks", [])
         if not tasks:
             return "No tasks were scheduled for this day."
@@ -205,43 +215,49 @@ class Scheduler:
         )
 
     def sort_tasks_by_time(self, tasks: List[Task]) -> List[Task]:
-        """Sort tasks chronologically by scheduled time."""
+        """Return tasks ordered by scheduled hour and minute."""
         return sorted(tasks, key=lambda task: (task.scheduled_hour, task.scheduled_minute))
 
     def sort_tasks_by_priority(self, tasks: List[Task]) -> List[Task]:
-        """Sort tasks by priority first, then by shorter duration."""
+        """Return tasks ordered by priority, then by shorter duration."""
         return sorted(tasks, key=lambda task: (self.PRIORITY_ORDER[task.priority], task.duration))
 
     def detect_conflicts(self, tasks: List[Task]) -> List[tuple]:
         """
-        Detect time conflicts between tasks for the same pet.
-        Returns a list of conflict tuples: [(task1, task2), ...]
+        Detect time conflicts between any two scheduled tasks.
+
+        Returns a list of overlapping task pairs: [(task1, task2), ...].
+        Conflicts may happen either for the same pet or across different pets.
         """
         conflicts = []
-        tasks_by_pet = {}
+        time_sorted_tasks = self.sort_tasks_by_time(tasks)
 
-        for task in tasks:
-            if task.pet not in tasks_by_pet:
-                tasks_by_pet[task.pet] = []
-            tasks_by_pet[task.pet].append(task)
-
-        # Check for overlaps within each pet's tasks
-        for pet, pet_tasks in tasks_by_pet.items():
-            for i, task1 in enumerate(pet_tasks):
-                for task2 in pet_tasks[i + 1 :]:
-                    # Check if time ranges overlap
-                    if self._tasks_overlap(task1, task2):
-                        conflicts.append((task1, task2))
+        for i, task1 in enumerate(time_sorted_tasks):
+            for task2 in time_sorted_tasks[i + 1 :]:
+                if task2.start_time_minutes >= task1.end_time_minutes:
+                    break
+                if self._tasks_overlap(task1, task2):
+                    conflicts.append((task1, task2))
 
         return conflicts
 
+    def get_conflict_type(self, task1: Task, task2: Task) -> str:
+        """Classify a conflict as either `same_pet` or `different_pets`."""
+        if task1.pet == task2.pet:
+            return "same_pet"
+        return "different_pets"
+
     def _tasks_overlap(self, task1: Task, task2: Task) -> bool:
-        """Check if two tasks have overlapping time slots."""
+        """Return True when two task time ranges overlap at all."""
         return (task1.start_time_minutes < task2.end_time_minutes and 
                 task2.start_time_minutes < task1.end_time_minutes)
 
     def _filter_tasks_by_preferences(self, tasks: List[Task]) -> List[Task]:
-        """Prefer tasks whose type matches the owner's stated preferences."""
+        """Prefer tasks whose task type matches the owner's stated preferences.
+
+        If no tasks match the preferences, the original task list is returned so the
+        scheduler can still build a useful plan.
+        """
         if not self.owner.preferences:
             return tasks
 
@@ -256,16 +272,15 @@ class Scheduler:
         return self.sort_tasks_by_priority(tasks)
 
     def _select_tasks_within_time_limit(self, tasks: List[Task]) -> List[Task]:
-        """Choose tasks in sorted order until the owner's time limit is reached."""
+        """Choose tasks in order while keeping total scheduled time within the limit."""
         selected_tasks: List[Task] = []
         total_duration = 0
 
         for task in tasks:
-            if total_duration + task.duration <= self.owner.time_available:
-                selected_tasks.append(task)
-                total_duration += task.duration
-            elif self.owner.time_available - total_duration < task.duration:
-                # Early exit: no remaining task will fit
-                break
+            if total_duration + task.duration > self.owner.time_available:
+                continue
+
+            selected_tasks.append(task)
+            total_duration += task.duration
 
         return selected_tasks

@@ -22,6 +22,10 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Smarter Scheduling
+
+The scheduler now does more than just list tasks. It can track task status, sort tasks by priority or scheduled time, detect overlapping tasks, and flag conflicts for the same pet or across different pets. The system also keeps task selection within the owner's available time and can explain why a daily plan was chosen.
+
 ## Getting started
 
 ### Setup
